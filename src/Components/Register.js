@@ -6,25 +6,35 @@ import PhoneInput from "react-phone-number-input";
 import { useAlert } from "react-alert";
 
 function Register() {
-  const [donorname, setName] = useState("");
+  const [username, setName] = useState("");
   const [password, setPassword] = useState("");
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhonenum] = useState();
   const [email, setEmail] = useState();
-
+  const [choice, setChoice] = useState("");
+const [donorname, setDonorname] = useState("")
   function register(event) {
     event.preventDefault();
-    const donor = {
-      donorname,
+    const admin = {
+      username,
       password,
-      address,
       phoneNumber,
       email,
     };
+    const donor={
+      donorname,
+      password,
+      phoneNumber,
+      email,
+      address
+    }
+    debugger
     console.log(donor);
-    return fetch("/donor", {
+    if(choice==="admin")
+    {
+    return fetch("/administrator", {
       method: "post",
-      body: JSON.stringify(donor),
+      body: JSON.stringify(admin),
       headers: {
         "Content-Type": "application/json",
       },
@@ -39,6 +49,27 @@ function Register() {
         console.log(res);
       }
     });
+  }
+ else if(choice==="donor")
+  {
+  return fetch("/donor", {
+    method: "post",
+    body: JSON.stringify(donor),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => {
+    if (res.status === 400) {
+      swal(<div>Successfully Registered</div>, {
+        button: true,
+      });
+      window.location.reload();
+      window.location.href = "/login";
+    } else if (res.status === 500) {
+      console.log(res);
+    }
+  });
+}
   }
 
   return (
@@ -63,6 +94,30 @@ function Register() {
               <div className="form-group text-center mt-5">
                 <div className="form-group">
                   <br />
+                  <div className="form-group radio">
+                  <label>
+                    <input
+                      type="radio"
+                      name="choice"
+                      value="admin"
+                      onChange={(event) => {
+                        setChoice(event.target.value);
+                      }}
+                    />
+                    Admin
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="choice"
+                      value="donor"
+                      onChange={(event) => {
+                        setChoice(event.target.value);
+                      }}
+                    />
+                    Donor
+                  </label>
+                </div>
                   <h1>
                     <b>Register Yourself</b>{" "}
                     <span className="title-under"></span>
